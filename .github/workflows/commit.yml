@@ -1,5 +1,4 @@
 name: Commit Workflow
-#commit only
 on:
   push:
     branches: [feature-123]
