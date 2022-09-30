@@ -1,47 +1,53 @@
-name: Veracode Pipeline scan to PR comment
-
-# The type of runner that the job will run on
-run-name: ubuntu-latest
-  
-# Controls when the action will run. 
+name: Pipeline Scan to PR comment
+#commit only
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
-  pull_request:
-    branches: [ master, develop, main, release/* ]
+  push:
+    branches: [main]
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  static_pipeline_scan:
-    # The type of runner that the job will run on
-    runs-on: [ self-hosted, generic ]
-    
+  build:
+    runs-on: ubuntu-latest
     steps:
-      - name: create dir prior
-        run: |
+    - uses: actions/checkout@v2
+    - uses: actions/setup-java@v1
+      with: 
+        java-version: 1.8
+    - name: Cache Maven packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+    - name: Build with Maven
+      run: mvn clean package
+          
+    - uses: actions/upload-artifact@v1
+      with:
+        name: verademo.war
+        path: target/verademo.war
+    
+    - name: create dir prior
+      run: |
           mkdir dls
-      - name: Download pipeline code
-        working-directory: ./dls/
-        run: |
+    - name: Download pipeline code
+      working-directory: ./dls/
+      run: |
           curl https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip -o veracode.zip
           unzip veracode.zip
-      - name: Run Pipeline Scanner
-        continue-on-error: true
-        run: java -Dpipeline.debug=true -jar ./dls/pipeline-scan.jar --veracode_api_id "${{secrets.VERACODE_ID}}" --veracode_api_key "${{secrets.VERACODE_KEY}}" --file "result.zip" -jo true -so true
-      - id: get-comment-body
-        if: ${{ github.head_ref != '' }}
-        run: |
+    - name: Run Pipeline Scanner
+      continue-on-error: true
+      run: java -Dpipeline.debug=true -jar ./dls/pipeline-scan.jar --veracode_api_id "${{secrets.VERACODE_ID}}" --veracode_api_key "${{secrets.VERACODE_KEY}}" --file "result.zip" -jo true -so true
+    - id: get-comment-body
+      if: ${{ github.head_ref != '' }}
+      run: |
           body=$(cat results.txt)
           body="${body//$'===\n---'/'===\n<details><summary>details</summary><p>\n---'}"
           body="${body//$'---\n\n==='/'---\n</p></details>\n==='}"
           body="${body//$'\n'/'<br>'}"
           echo ::set-output name=body::$body
-      - name: Add comment to PR
-        if: ${{ github.head_ref != '' }}
-        uses: peter-evans/create-or-update-comment@v1
-        with:
+    - name: Add comment to PR
+      if: ${{ github.head_ref != '' }}
+      uses: peter-evans/create-or-update-comment@v1
+      with:
           issue-number: ${{ github.event.pull_request.number }}
           body: ${{ steps.get-comment-body.outputs.body }}
           reactions: rocket
