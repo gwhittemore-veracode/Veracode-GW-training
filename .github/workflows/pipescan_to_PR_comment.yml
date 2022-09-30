@@ -1,4 +1,4 @@
-name: Veracode SAST Scan
+name: Veracode Pipeline scan to PR comment
 
 # Controls when the action will run. 
 on:
