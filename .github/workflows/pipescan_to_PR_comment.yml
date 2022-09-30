@@ -1,5 +1,8 @@
 name: Veracode Pipeline scan to PR comment
 
+# The type of runner that the job will run on
+run-name: ubuntu-latest
+  
 # Controls when the action will run. 
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
