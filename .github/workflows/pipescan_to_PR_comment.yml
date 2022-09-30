@@ -29,13 +29,11 @@ jobs:
       run: |
           mkdir dls
           
-    - name: Download the Pipeline Scanner
-      uses: wei/curl@master
-      with:
-       args: -O https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
-       
-    - name: Unzip the Pipeline Scanner
-      run: unzip pipeline-scan-LATEST.zip
+    - name: Download pipeline code
+      working-directory: ./dls/
+      run: |
+          curl https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip -o veracode.zip
+          unzip veracode.zip
       
     - name: Run Pipeline Scanner
       id: pipeline-scan
