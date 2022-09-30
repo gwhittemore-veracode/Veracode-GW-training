@@ -35,7 +35,7 @@ jobs:
           unzip veracode.zip
     - name: Run Pipeline Scanner
       continue-on-error: true
-      run: java -Dpipeline.debug=true -jar ./dls/pipeline-scan.jar --veracode_api_id "${{secrets.VERACODE_ID}}" --veracode_api_key "${{secrets.VERACODE_KEY}}" --file "result.zip" -jo true -so true
+      run: java -Dpipeline.debug=true -jar ./dls/pipeline-scan.jar --veracode_api_id "${{secrets.VERACODE_ID}}" --veracode_api_key "${{secrets.VERACODE_KEY}}" -f "result.zip" -jo true -so true
     - id: get-comment-body
       if: ${{ github.head_ref != '' }}
       run: |
