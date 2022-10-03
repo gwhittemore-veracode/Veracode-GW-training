@@ -1,0 +1,2 @@
+- name: Veracode Pipeline-Scan Action
+  uses: veracode/Veracode-pipeline-scan-action@pipeline-scan-beta-v0.0.1
