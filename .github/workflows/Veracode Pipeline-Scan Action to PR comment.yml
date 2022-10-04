@@ -37,7 +37,7 @@ jobs:
     - name: Run Pipeline Scanner
       continue-on-error: true
       run: |
-        java -Dpipeline.debug=true -jar ./dls/pipeline-scan.jar
+        java -Dpipeline.debug=true -jar ./dls/pipeline-scan.jar -rp
             -vid "${{secrets.VERACODE_API_ID}}" \
             -vkey "${{secrets.VERACODE_API_KEY}}" \
             --fail_on_severity="Very High, High" \
@@ -45,7 +45,7 @@ jobs:
             --file "result.zip"
             -jo true 
             -so true 
-            -rp
+            
     - id: get-comment-body
       if: ${{ github.head_ref != '' }}
       run: |
