@@ -41,9 +41,11 @@ jobs:
             -vid "${{secrets.VERACODE_API_ID}}" \
             -vkey "${{secrets.VERACODE_API_KEY}}" \
             --fail_on_severity="Very High, High" \
-            --file /tmp/verademo.war \
+            --file "target/verademo.war"
+            --file "result.zip"
             -jo true 
             -so true 
+            -rp
     - id: get-comment-body
       if: ${{ github.head_ref != '' }}
       run: |
