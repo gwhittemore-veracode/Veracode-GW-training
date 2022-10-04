@@ -1,24 +1,26 @@
 pipeline_scan:
-# needs the build step before this job will start running
-     needs: build
-     runs-on: ubuntu-latest
-     name: pipeline scan
-steps:
-     name: checkout repo
-     uses: actions/checkout@v2
-# get the compiled binary from a previous job
-     
-name: get archive
-uses: actions/download-artifact@v2
-with:
- name: verademo.war
+    # needs the build step before this job will start running
+      needs: build
+      runs-on: ubuntu-latest
+      name: pipeline scan
 
-# run the pipeline scan action
-name:pipeline-scan action step
+      steps:
+        - name: checkout repo
+          uses: actions/checkout@v2
+      
+      # get the compiled binary from a previous job
+        - name: get archive
+          uses: actions/download-artifact@v2
+          with:
+            name: verademo.war
 
-id: pipeline-scan
-        uses: veracode/Veracode-pipeline-scan-action@latest
-        with:
-          vid: ${{ secrets.VID }}
-          vkey: ${{ secrets.VKEY }}
-          file: "verademo.war" 
+      # run the pipeline scan action
+        - name: pipeline-scan action step
+          id: pipeline-scan
+          uses: veracode/Veracode-pipeline-scan-action@latest
+          with:
+            vid: ${{ secrets.VID }}
+            vkey: ${{ secrets.VKEY }}
+            file: "verademo.war" 
+            request_policy: "VeraDemo Policy"
+            fail_build: true
