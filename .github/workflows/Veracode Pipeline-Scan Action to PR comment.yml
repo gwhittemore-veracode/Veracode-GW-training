@@ -36,7 +36,14 @@ jobs:
           unzip veracode.zip
     - name: Run Pipeline Scanner
       continue-on-error: true
-      run: java -Dpipeline.debug=true -jar ./dls/pipeline-scan.jar --veracode_api_id "${{secrets.VERACODE_API_ID}}" --veracode_api_key "${{secrets.VERACODE_API_KEY}}" --file "target/verademo.war" --fail_on_severity="Very High, High" --file "result.zip" -jo true -so true
+      run: |
+        java -jar /opt/veracode/pipeline-scan.jar \
+            -vid "${{secrets.VERACODE_API_ID}}" \
+            -vkey "${{secrets.VERACODE_API_KEY}}" \
+            --fail_on_severity="Very High, High" \
+            --file /tmp/verademo.war \
+            -jo true 
+            -so true 
     - id: get-comment-body
       if: ${{ github.head_ref != '' }}
       run: |
@@ -58,8 +65,8 @@ jobs:
       id: pipeline-scan
       uses: veracode/Veracode-pipeline-scan-action@pipeline-scan-beta-v0.0.1
       with:
-            vid: ${{ secrets.VID }}
-            vkey: ${{ secrets.VKEY }}
+            vid: "${{secrets.VERACODE_API_ID}}"
+            vkey: "${{secrets.VERACODE_API_KEY}}"
             file: "verademo.war" 
             request_policy: "VeraDemo Policy"
             fail_build: true
