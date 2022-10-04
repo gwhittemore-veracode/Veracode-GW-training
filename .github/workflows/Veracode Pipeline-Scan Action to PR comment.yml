@@ -16,14 +16,9 @@ pipeline_scan:
 
       # run the pipeline scan action
       - name: pipeline-scan action step
-        id: pipeline-scan
+        id: pipelien-scan
         uses: veracode/Veracode-pipeline-scan-action@latest
         with:
-         vid: ${{ secrets.VID }}
-         vkey: ${{ secrets.VKEY }}
-         file: "verademo.war"  
-         store_baseline_file: true
-         store_baseline_file_branch: my-feature-branch
-         create_baseline_from: standard
-         baseline_file: "veracode-pipeline-scan-baseline-file.json"
-      fail_build: true
+          vid: ${{ secrets.VID }}
+          vkey: ${{ secrets.VKEY }}
+          file: "verademo.war"
