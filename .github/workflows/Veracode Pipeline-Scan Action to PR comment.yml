@@ -58,10 +58,10 @@ jobs:
       # run the pipeline scan action
     - name: pipeline-scan action step
       id: pipeline-scan
-      uses: veracode/Veracode-pipeline-scan-action@pipeline-scan-beta-v0.0.1
+      uses: veracode/Veracode-pipeline-scan-action@pipeline-scan-beta-v0.0.1 
       with:
-            vid: "${{secrets.VERACODE_API_ID}}"
-            vkey: "${{secrets.VERACODE_API_KEY}}"
-            file: "verademo.war" 
-            rp: REQUEST_POLICY
+            vid: '${{ secrets.VERACODE_API_ID }}'
+            vkey: '${{ secrets.VERACODE_API_KEY }}'
+            file: "target/verademo.war"
+            request_policy: REQUEST_POLICY
             fail_build: true
