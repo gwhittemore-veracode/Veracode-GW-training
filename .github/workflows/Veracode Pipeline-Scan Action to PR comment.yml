@@ -37,10 +37,8 @@ jobs:
     - name: Run Pipeline Scanner
       continue-on-error: true
       run: |
-        java -Dpipeline.debug=true -jar ./dls/pipeline-scan.jar -rp REQUEST_POLICY
-            -vid "${{secrets.VERACODE_API_ID}}" \
-            -vkey "${{secrets.VERACODE_API_KEY}}" \
-            --fail_on_severity="Very High, High" \
+        java -Dpipeline.debug=true -jar ./dls/pipeline-scan.jar -vid: '${{ secrets.VERACODE_API_ID }}' -vkey: '${{ secrets.VERACODE_API_KEY }}' -rp REQUEST_POLICY
+            --fail_on_severity="Very High, High"
             --file "target/verademo.war"
             --file "result.zip"
             -jo true 
