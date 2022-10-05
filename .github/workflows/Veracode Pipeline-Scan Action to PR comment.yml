@@ -63,5 +63,5 @@ jobs:
             vid: "${{secrets.VERACODE_API_ID}}"
             vkey: "${{secrets.VERACODE_API_KEY}}"
             file: "verademo.war" 
-            request_policy: <custom policy name>
+            rp: REQUEST_POLICY
             fail_build: true
