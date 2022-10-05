@@ -63,5 +63,5 @@ jobs:
             vid: "${{secrets.VERACODE_API_ID}}"
             vkey: "${{secrets.VERACODE_API_KEY}}"
             file: "verademo.war" 
-            request_policy: "Veracode Recommended Very High"
+            request_policy: <custom policy name>
             fail_build: true
