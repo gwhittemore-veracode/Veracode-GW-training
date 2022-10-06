@@ -1,7 +1,6 @@
 name: Veracode Pipeline-Scan Action to PR comment
 #commit only
 on:
-  push:
   pull_request:
     branches: [main]
 
@@ -48,5 +47,5 @@ jobs:
             vid: '${{ secrets.VERACODE_API_ID }}'
             vkey: '${{ secrets.VERACODE_API_KEY }}'
             file: "target/verademo.war"
-            request_policy: REQUEST_POLICY
+            request_policy: OWASP 10
             fail_build: true
