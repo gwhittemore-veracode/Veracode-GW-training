@@ -2,7 +2,8 @@ name: Veracode Pipeline-Scan Action to PR comment
 #commit only
 on:
   push:
-    branches: [gwhittemore-veracode-patch-3]
+  pull_request:
+    branches: [main]
 
 jobs:
   build:
