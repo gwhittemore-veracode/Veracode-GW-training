@@ -1,12 +1,10 @@
-name: Veracode Pipeline-Scan Action to PR comment
-#commit only
 on:
   pull_request:
     branches: [main]
-
+    #test
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-java@v1
@@ -19,33 +17,51 @@ jobs:
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
     - name: Build with Maven
       run: mvn clean package
-          
+      
     - uses: actions/upload-artifact@v1
       with:
         name: verademo.war
         path: target/verademo.war
-    
-    - name: create dir prior
-      run: |
-          mkdir dls
-          
-    - name: Download pipeline code
-      working-directory: ./dls/
-      run: |
-          curl https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip -o veracode.zip
-          unzip veracode.zip
-    - name: Run Pipeline Scanner
-      continue-on-error: true
-      run: |
-        java -Dpipeline.debug=true -jar ./dls/pipeline-scan.jar -vid: '${{ secrets.VERACODE_API_ID }}' -vkey: '${{ secrets.VERACODE_API_KEY }}' -rp REQUEST_POLICY --fail_on_severity="Very High, High" --file "target/verademo.war" --file "result.zip" -jo true -so true 
+        
+  pipeline_scan:
+      needs: build
+      runs-on: ubuntu-latest
+      name: pipeline scan
+      steps:
+        - name: checkout repo
+          uses: actions/checkout@v2
 
-      # run the pipeline scan action
-    - name: pipeline-scan action step
-      id: pipeline-scan
-      uses: veracode/Veracode-pipeline-scan-action@pipeline-scan-beta-v0.0.3 
-      with:
-            vid: '${{ secrets.VERACODE_API_ID }}'
-            vkey: '${{ secrets.VERACODE_API_KEY }}'
-            file: "target/verademo.war"
-            request_policy: OWASP 10
-            fail_build: true
+        - name: get archive
+          uses: actions/download-artifact@v2
+          with:
+            name: verademo.war
+        - name: pipeline-scan action step
+          id: pipeline-scan
+          uses: veracode/Veracode-pipeline-scan-action@pipeline-scan-beta-v0.0.3
+          #julz0815/Veracode-pipeline-scan-action@beta-0.29
+          with:
+            vid: ${{ secrets.VERACODE_API_ID }}
+            vkey: ${{ secrets.VERACODE_API_KEY }}
+            file: "verademo.war" 
+            request_policy: "OWASP 10"
+            store_baseline_file: true
+            store_baseline_file_branch: "Feature-123"
+            create_baseline_from: "standard"
+            debug: 1
+            fail_build: false
+
+# This step will import flaws from the step above
+  import-policy-flaws:
+    needs: pipeline_scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: get flaw file
+        uses: actions/download-artifact@v2
+        with:
+          name: Veracode Pipeline-Scan Results
+          path: /tmp
+
+      - name: import flaws as issues
+        uses: julz0815/veracode-flaws-to-issues@beta-0.0.104
+        with:
+          scan-results-json: '/tmp/filtered_results.json'
